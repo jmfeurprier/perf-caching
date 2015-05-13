@@ -24,7 +24,7 @@ class VolatileStorage implements Storage
      */
     public function store(CacheEntry $entry)
     {
-        $this->entries[$entry->id()] = $entry;
+        $this->entries[$entry->getId()] = $entry;
     }
 
     /**

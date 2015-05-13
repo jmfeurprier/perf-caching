@@ -2,22 +2,23 @@
 	"name"        : "perf/caching",
 	"type"        : "library",
 	"license"     : "MIT",
-	"description" : "Form package from perf, the PHP Extensible and Robust Framework",
+	"description" : "Allows to store data with caching engines (Memcache, file system, etc).",
 	"require"     : {
-		"php" : ">=5.3.3"
+		"php"         : ">=5.3.3",
+		"perf/timing" : "^1.0.0"
 	},
 	"require-dev": {
-		"ext-xdebug"                : "~2.1",
-		"pdepend/pdepend"           : "~2.0",
-		"phing/phing"               : "~2.0",
-		"phpunit/phpunit"           : "~4.0",
-		"phpmd/phpmd"               : "~2.1.0",
-		"sebastian/phpcpd"          : "~2.0",
-		"squizlabs/php_codesniffer" : "~2.0"
+		"ext-xdebug"                : "^2.1.0",
+		"pdepend/pdepend"           : "^2.0.0",
+		"phing/phing"               : "^2.0.0",
+		"phpmd/phpmd"               : "^2.0.0",
+		"phpunit/phpunit"           : "^4.0.0",
+		"sebastian/phpcpd"          : "^2.0.0",
+		"squizlabs/php_codesniffer" : "^2.0.0"
 	},
 	"autoload" : {
 		"psr-4" : {
-			"perf\\Caching\\" : "lib/perf/Caching/"
+			"perf\\Caching\\" : "src/perf/Caching/"
 		}
 	}
 }

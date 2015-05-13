@@ -38,13 +38,13 @@ class FileSystemStorage implements Storage
      */
     public function store(CacheEntry $entry)
     {
-        $cacheFilePath = $this->getCacheFilePath($entry->id());
+        $cacheFilePath = $this->getCacheFilePath($entry->getId());
 
-        $packedData = serialize($entry->data());
+        $packedContent = serialize($entry->getContent());
 
-        $fileContent = $entry->creationTimestamp() . "\n"
-                     . (is_null($entry->expirationTimestamp()) ? '-' : $entry->expirationTimestamp()) . "\n"
-                     . $packedData;
+        $fileContent = $entry->getCreationTimestamp() . "\n"
+                     . ($entry->hasExpirationTimestamp() ? $entry->getExpirationTimestamp() : '-') . "\n"
+                     . $packedContent;
 
         if (false === file_put_contents($cacheFilePath, $fileContent)) {
             throw new \RuntimeException('Failed to store cache entry.');
@@ -74,20 +74,20 @@ class FileSystemStorage implements Storage
             throw new \RuntimeException('Failed to read cache file.');
         }
 
-        // Extracting timestamps (creation and expiration) and packed data from file
+        // Extracting timestamps (creation and expiration) and packed content from file
         $exploded = explode("\n", $fileContent, 3);
         if (3 !== count($exploded)) {
             throw new \RuntimeException('Invalid cache file content.');
         }
-        list($creationTimestamp, $expirationTimestamp, $packedData) = $exploded;
+        list($creationTimestamp, $expirationTimestamp, $packedContent) = $exploded;
 
         if ('-' === $expirationTimestamp) {
             $expirationTimestamp = null;
         }
 
-        $data = unserialize($packedData);
+        $content = unserialize($packedContent);
 
-        return new CacheEntry($id, $data, $creationTimestamp, $expirationTimestamp);
+        return new CacheEntry($id, $content, $creationTimestamp, $expirationTimestamp);
     }
 
     /**
