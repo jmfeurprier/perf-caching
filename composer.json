@@ -2,7 +2,7 @@
 	"name"        : "perf/caching",
 	"type"        : "library",
 	"license"     : "MIT",
-	"description" : "Form package from perf, the PHP Extensible and Robust Framework",
+	"description" : "Allows to store and retrieve data with several caching storages (Memcached, file-system, etc).",
 	"require"     : {
 		"php" : ">=5.3.3"
 	},

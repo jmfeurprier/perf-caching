@@ -1,4 +1,4 @@
 perf caching
 ============
 
-caching package from perf, the PHP Extensible and Robust Framework.
+Allows to store and retrieve data with several caching storages (Memcached, file-system, etc).
