@@ -63,7 +63,7 @@ class CacheClient
     {
         $creationTimestamp = time();
 
-        if (is_null($maxLifetimeSeconds)) {
+        if (null === $maxLifetimeSeconds) {
             $expirationTimestamp = null;
         } else {
             $expirationTimestamp = ($creationTimestamp + (int) $maxLifetimeSeconds);
@@ -89,17 +89,17 @@ class CacheClient
     {
         $entry = $this->storage->tryFetch($id);
 
-        if (is_null($entry)) {
+        if (null === $entry) {
             return null;
         }
 
-        if (!is_null($maxLifetimeSeconds)) {
+        if (null !== $maxLifetimeSeconds) {
             if (($this->nowTimestamp - $entry->creationTimestamp()) > $maxLifetimeSeconds) {
                 return null;
             }
         }
 
-        if (!is_null($entry->expirationTimestamp())) {
+        if (null !== $entry->expirationTimestamp()) {
             if ($this->nowTimestamp > $entry->expirationTimestamp()) {
                 return null;
             }

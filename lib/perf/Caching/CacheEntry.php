@@ -52,7 +52,7 @@ class CacheEntry
         $this->data              = $data;
         $this->creationTimestamp = (int) $creationTimestamp;
 
-        if (is_null($expirationTimestamp)) {
+        if (null === $expirationTimestamp) {
             $this->expirationTimestamp = null;
         } else {
             $this->expirationTimestamp = (int) $expirationTimestamp;

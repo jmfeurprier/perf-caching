@@ -43,7 +43,7 @@ class FileSystemStorage implements Storage
         $packedData = serialize($entry->data());
 
         $fileContent = $entry->creationTimestamp() . "\n"
-                     . (is_null($entry->expirationTimestamp()) ? '-' : $entry->expirationTimestamp()) . "\n"
+                     . ((null === $entry->expirationTimestamp()) ? '-' : $entry->expirationTimestamp()) . "\n"
                      . $packedData;
 
         if (false === file_put_contents($cacheFilePath, $fileContent)) {

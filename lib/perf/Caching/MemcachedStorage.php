@@ -68,7 +68,7 @@ class MemcachedStorage implements Storage
      */
     public function store(CacheEntry $entry)
     {
-        if (is_null($entry->expirationTimestamp())) {
+        if (null === $entry->expirationTimestamp()) {
             $expirationSeconds = 0; // Never expires.
         } else {
             $expirationSeconds = ($entry->expirationTimestamp() - $entry->creationTimestamp());
