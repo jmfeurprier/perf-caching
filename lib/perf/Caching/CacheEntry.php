@@ -31,7 +31,7 @@ class CacheEntry
     private $creationTimestamp;
 
     /**
-     *
+     * Optional expiration timestamp.
      *
      * @var null|int
      */
@@ -43,7 +43,7 @@ class CacheEntry
      * @param string $id
      * @param mixed $data
      * @param int $creationTimestamp
-     * @param unknown_type $expirationTimestamp
+     * @param null|int $expirationTimestamp
      * @return void
      */
     public function __construct($id, $data, $creationTimestamp, $expirationTimestamp)

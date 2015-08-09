@@ -105,7 +105,14 @@ class MemcachedStorage implements Storage
      */
     public function flushById($id)
     {
-        if (!$this->getConnection()->delete($id)) {
+        $this->getConnection()->delete($id);
+
+        static $expectedResultCodes = array(
+            \Memcached::RES_SUCCESS,
+            \Memcached::RES_NOTFOUND,
+        );
+
+        if (!in_array($this->getConnection()->getResultCode(), $expectedResultCodes, true)) {
             throw new \RuntimeException('Failed to delete data from memcache server.');
         }
     }

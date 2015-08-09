@@ -3,7 +3,7 @@
 namespace perf\Caching;
 
 /**
- * This class allows to store any kind of content (text, html, xml, etc) into cache files.
+ * This class allows to store any kind of content (text, html, object, etc) into cache.
  *
  */
 class CacheClient
