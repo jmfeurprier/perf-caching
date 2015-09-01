@@ -40,7 +40,7 @@ class MemcachedStorage implements Storage
     /**
      *
      *
-     * @var Memcached
+     * @var \Memcached
      */
     private $connection;
 
@@ -75,7 +75,7 @@ class MemcachedStorage implements Storage
         }
 
         if (!$this->getConnection()->set($entry->id(), $entry, $expirationSeconds)) {
-            throw new \RuntimeException('Failed to store data into memcache server.');
+            return $this->failure('Failed to store data into memcache server.');
         }
     }
 
@@ -113,7 +113,7 @@ class MemcachedStorage implements Storage
         );
 
         if (!in_array($this->getConnection()->getResultCode(), $expectedResultCodes, true)) {
-            throw new \RuntimeException('Failed to delete data from memcache server.');
+            return $this->failure('Failed to delete data from memcache server.');
         }
     }
 
@@ -126,8 +126,23 @@ class MemcachedStorage implements Storage
     public function flushAll()
     {
         if (!$this->getConnection()->flush()) {
-            throw new \RuntimeException('Failed to flush memcache content.');
+            return $this->failure('Failed to flush memcache content.');
         }
+    }
+
+    /**
+     *
+     *
+     * @param string $message
+     * @return void
+     * @throws \RuntimeException
+     */
+    private function failure($message)
+    {
+        $resultCode    = $this->getConnection()->getResultCode();
+        $resultMessage = $this->getConnection()->getResultMessage();
+
+        throw new \RuntimeException("{$message} << #{$resultCode} {$resultMessage}");
     }
 
     /**
