@@ -69,12 +69,12 @@ class MemcachedStorage implements Storage
     public function store(CacheEntry $entry)
     {
         if (null === $entry->expirationTimestamp()) {
-            $expirationSeconds = 0; // Never expires.
+            $expirationTimestamp = 0; // Never expires.
         } else {
-            $expirationSeconds = ($entry->expirationTimestamp() - $entry->creationTimestamp());
+            $expirationTimestamp = $entry->expirationTimestamp();
         }
 
-        if (!$this->getConnection()->set($entry->id(), $entry, $expirationSeconds)) {
+        if (!$this->getConnection()->set($entry->id(), $entry, $expirationTimestamp)) {
             return $this->failure('Failed to store data into memcache server.');
         }
     }
