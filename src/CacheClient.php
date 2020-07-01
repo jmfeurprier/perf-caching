@@ -2,56 +2,21 @@
 
 namespace perf\Caching;
 
+use InvalidArgumentException;
+use perf\Caching\Storage\CachingStorageInterface;
+use RuntimeException;
 use perf\Timing\Clock;
 
 /**
- * This class allows to store any kind of content (text, html, object, etc) into cache.
- *
+ * Allows to store any kind of content (text, html, object, etc) into cache.
  */
 class CacheClient
 {
+    private CachingStorageInterface $storage;
 
-    /**
-     * Cache storage.
-     *
-     * @var Storage
-     */
-    private $storage;
+    private Clock $clock;
 
-    /**
-     * Clock.
-     *
-     * @var Clock
-     */
-    private $clock;
-
-    /**
-     * Creates a new cache client with default configuration.
-     *
-     * @return CacheClient
-     */
-    public static function createDefault()
-    {
-        return static::createBuilder()->build();
-    }
-
-    /**
-     * Creates a new cache client with volatile storage.
-     *
-     * @return CacheClient
-     */
-    public static function createVolatile()
-    {
-        return static::createWithStorage(new VolatileStorage());
-    }
-
-    /**
-     *
-     *
-     * @param Storage $storage
-     * @return CacheClient
-     */
-    public static function createWithStorage(Storage $storage)
+    public static function createWithStorage(CachingStorageInterface $storage): self
     {
         return static::createBuilder()
             ->setStorage($storage)
@@ -59,24 +24,12 @@ class CacheClient
         ;
     }
 
-    /**
-     *
-     *
-     * @return CacheClientBuilder
-     */
-    public static function createBuilder()
+    public static function createBuilder(): CacheClientBuilder
     {
         return new CacheClientBuilder();
     }
 
-    /**
-     * Constructor.
-     *
-     * @param Storage $storage
-     * @param Clock $clock
-     * @return void
-     */
-    public function __construct(Storage $storage, Clock $clock)
+    public function __construct(CachingStorageInterface $storage, Clock $clock)
     {
         $this->storage = $storage;
         $this->clock   = $clock;
@@ -86,28 +39,28 @@ class CacheClient
      * Attempts to store provided content into cache. Cache file will hold creation and expiration timestamps,
      *   and provided content.
      *
-     * @param mixed $id Cache item unique identifier (ex: 123).
+     * @param mixed $id      Cache item unique identifier (ex: 123).
      * @param mixed $content Content to be added to cache.
-     * @param null|int $maxLifetimeSeconds (Optional) duration in seconds after which cache file will be
+     * @param null|int       $maxLifetimeSeconds (Optional) duration in seconds after which cache file will be
      *      considered expired.
+     *
      * @return void
-     * @throws \InvalidArgumentException
-     * @throws \RuntimeException
+     *
+     * @throws InvalidArgumentException
+     * @throws RuntimeException
      */
-    public function store($id, $content, $maxLifetimeSeconds = null)
+    public function store(string $id, $content, ?int $maxLifetimeSeconds = null): void
     {
         $creationTimestamp = $this->clock->getTimestamp();
 
         if (null === $maxLifetimeSeconds) {
             $expirationTimestamp = null;
-        } elseif (is_int($maxLifetimeSeconds)) {
+        } else {
             if ($maxLifetimeSeconds < 1) {
-                throw new \InvalidArgumentException('Invalid maximum lifetime.');
+                throw new InvalidArgumentException('Invalid maximum lifetime.');
             }
 
             $expirationTimestamp = ($creationTimestamp + $maxLifetimeSeconds);
-        } else {
-            throw new \InvalidArgumentException('Invalid maximum lifetime.');
         }
 
         $entry = new CacheEntry($id, $content, $creationTimestamp, $expirationTimestamp);
@@ -141,7 +94,7 @@ class CacheClient
                 return null;
             }
         } elseif (null !== $maxLifetimeSeconds) {
-            throw new \InvalidArgumentException('Invalid maximum lifetime.');
+            throw new InvalidArgumentException('Invalid maximum lifetime.');
         }
 
         if ($entry->hasExpirationTimestamp()) {
@@ -153,23 +106,12 @@ class CacheClient
         return $entry->getContent();
     }
 
-    /**
-     *
-     *
-     * @param string $id Cache entry unique identifier.
-     * @return void
-     */
-    public function flushById($id)
+    public function flushById(string $id): void
     {
         $this->storage->flushById($id);
     }
 
-    /**
-     * Deletes every cache file.
-     *
-     * @return void
-     */
-    public function flushAll()
+    public function flushAll(): void
     {
         $this->storage->flushAll();
     }
