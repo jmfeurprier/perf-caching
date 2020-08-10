@@ -3,11 +3,12 @@
 namespace perf\Caching\Storage;
 
 use perf\Caching\CacheEntry;
-use RuntimeException;
+use perf\Caching\Exception\CachingException;
 
 class FileSystemCachingStorage implements CachingStorageInterface
 {
-    const CACHE_FILE_SUFFIX = '.cache';
+    private const CACHE_FILE_SUFFIX        = '.cache';
+    private const CACHE_METADATA_SEPARATOR = "\n";
 
     /**
      * Base path where cache files are stored.
@@ -19,18 +20,22 @@ class FileSystemCachingStorage implements CachingStorageInterface
         $this->basePath = rtrim((string) $basePath, '/\\') . '/';
     }
 
-    public function store(CacheEntry $entry): void
+    public function store(CacheEntry $cacheEntry): void
     {
-        $cacheFilePath = $this->getCacheFilePath($entry->getId());
+        $cacheFilePath = $this->getCacheFilePath($cacheEntry->getId());
 
-        $packedContent = serialize($entry->getContent());
+        $packedContent = serialize($cacheEntry->getContent());
 
-        $fileContent = $entry->getCreationTimestamp() . "\n"
-                     . ($entry->hasExpirationTimestamp() ? $entry->getExpirationTimestamp() : '-') . "\n"
-                     . $packedContent;
+        $metadata = [
+            $cacheEntry->getCreationTimestamp(),
+            ($cacheEntry->hasExpirationTimestamp() ? $cacheEntry->getExpirationTimestamp() : '-'),
+            $packedContent,
+        ];
+
+        $fileContent = implode(self::CACHE_METADATA_SEPARATOR, $metadata);
 
         if (false === file_put_contents($cacheFilePath, $fileContent)) {
-            throw new RuntimeException('Failed to store cache entry.');
+            throw new CachingException('Failed to store cache entry.');
         }
     }
 
@@ -47,14 +52,15 @@ class FileSystemCachingStorage implements CachingStorageInterface
 
         // File read failure?
         if (false === $fileContent) {
-            throw new RuntimeException('Failed to read cache file.');
+            throw new CachingException('Failed to read cache file.');
         }
 
         // Extracting timestamps (creation and expiration) and packed content from file
-        $exploded = explode("\n", $fileContent, 3);
+        $exploded = explode(self::CACHE_METADATA_SEPARATOR, $fileContent, 3);
         if (3 !== count($exploded)) {
-            throw new RuntimeException('Invalid cache file content.');
+            throw new CachingException('Invalid cache file content.');
         }
+
         list($creationTimestamp, $expirationTimestamp, $packedContent) = $exploded;
 
         if ('-' === $expirationTimestamp) {
@@ -71,7 +77,7 @@ class FileSystemCachingStorage implements CachingStorageInterface
         $cacheFilePath = $this->getCacheFilePath($id);
 
         if (!unlink($cacheFilePath)) {
-            throw new RuntimeException("Failed to delete cache file '{$cacheFilePath}'.");
+            throw new CachingException("Failed to delete cache file '{$cacheFilePath}'.");
         }
     }
 
@@ -81,7 +87,7 @@ class FileSystemCachingStorage implements CachingStorageInterface
 
         foreach (glob($this->basePath . $mask) as $cacheFilePath) {
             if (!unlink($cacheFilePath)) {
-                throw new RuntimeException("Failed to delete cache file '{$cacheFilePath}'.");
+                throw new CachingException("Failed to delete cache file '{$cacheFilePath}'.");
             }
         }
     }

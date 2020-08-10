@@ -6,7 +6,7 @@ use perf\Caching\CacheEntry;
 
 class NullCachingStorage implements CachingStorageInterface
 {
-    public function store(CacheEntry $entry): void
+    public function store(CacheEntry $cacheEntry): void
     {
     }
 

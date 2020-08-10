@@ -11,9 +11,9 @@ class VolatileCachingStorage implements CachingStorageInterface
      */
     private $storedEntries = [];
 
-    public function store(CacheEntry $entry): void
+    public function store(CacheEntry $cacheEntry): void
     {
-        $this->storedEntries[$entry->getId()] = $entry;
+        $this->storedEntries[$cacheEntry->getId()] = $cacheEntry;
     }
 
     public function tryFetch(string $id): ?CacheEntry

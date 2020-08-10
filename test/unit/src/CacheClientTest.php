@@ -3,18 +3,19 @@
 namespace perf\Caching;
 
 use perf\Caching\Storage\CachingStorageInterface;
-use perf\Timing\Clock;
+use perf\Timing\ClockInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class CacheClientTest extends TestCase
 {
     /**
-     * @var CachingStorageInterface
+     * @var CachingStorageInterface|MockObject
      */
     private $storage;
 
     /**
-     * @var Clock
+     * @var ClockInterface|MockObject
      */
     private $clock;
 
@@ -24,7 +25,7 @@ class CacheClientTest extends TestCase
     {
         $this->storage = $this->createMock(CachingStorageInterface::class);
 
-        $this->clock = $this->createMock(Clock::class);
+        $this->clock = $this->createMock(ClockInterface::class);
 
         $this->cacheClient = new CacheClient($this->storage, $this->clock);
     }

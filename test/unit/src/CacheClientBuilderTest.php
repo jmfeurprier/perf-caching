@@ -3,7 +3,7 @@
 namespace perf\Caching;
 
 use perf\Caching\Storage\CachingStorageInterface;
-use perf\Timing\Clock;
+use perf\Timing\ClockInterface;
 use PHPUnit\Framework\TestCase;
 
 class CacheClientBuilderTest extends TestCase
@@ -35,7 +35,7 @@ class CacheClientBuilderTest extends TestCase
 
     public function testBuildWithClock()
     {
-        $clock = $this->createMock(Clock::class);
+        $clock = $this->createMock(ClockInterface::class);
 
         $this->cacheClientBuilder->setClock($clock);
 

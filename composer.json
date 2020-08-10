@@ -5,7 +5,7 @@
   "description": "Allows to store data with caching engines (Memcache, file system, etc).",
   "require": {
     "php": ">=7.4",
-    "perf/timing": "^1.0.0"
+    "perf/timing": "^2.0"
   },
   "require-dev": {
     "ext-xdebug": "^2.1.0",

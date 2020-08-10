@@ -4,14 +4,14 @@ namespace perf\Caching;
 
 use perf\Caching\Storage\CachingStorageInterface;
 use perf\Caching\Storage\NullCachingStorage;
+use perf\Timing\ClockInterface;
 use perf\Timing\Clock;
-use perf\Timing\RealTimeClock;
 
 class CacheClientBuilder
 {
     private CachingStorageInterface $storage;
 
-    private Clock $clock;
+    private ClockInterface $clock;
 
     public function setStorage(CachingStorageInterface $storage): self
     {
@@ -20,7 +20,7 @@ class CacheClientBuilder
         return $this;
     }
 
-    public function setClock(Clock $clock): self
+    public function setClock(ClockInterface $clock): self
     {
         $this->clock = $clock;
 
@@ -41,10 +41,10 @@ class CacheClientBuilder
         return $this->storage;
     }
 
-    private function getClock(): Clock
+    private function getClock(): ClockInterface
     {
         if (empty($this->clock)) {
-            return new RealTimeClock();
+            return new Clock();
         }
 
         return $this->clock;

@@ -5,7 +5,6 @@ namespace perf\Caching\Storage;
 use Memcached;
 use perf\Caching\CacheEntry;
 use perf\Caching\Exception\CachingException;
-use RuntimeException;
 
 class MemcachedCachingStorage implements CachingStorageInterface
 {
@@ -36,20 +35,25 @@ class MemcachedCachingStorage implements CachingStorageInterface
         $this->connection = $memcached;
     }
 
-    public function store(CacheEntry $entry): void
+    public function store(CacheEntry $cacheEntry): void
     {
-        if ($entry->hasExpirationTimestamp()) {
-            $expirationTimestamp = $entry->getExpirationTimestamp();
-        } else {
-            $expirationTimestamp = 0; // Never expires.
-        }
+        $expirationTimestamp = $this->getExpirationTimestamp($cacheEntry);
 
-        if (!$this->connection->set($entry->getId(), $entry, $expirationTimestamp)) {
+        if (!$this->connection->set($cacheEntry->getId(), $cacheEntry, $expirationTimestamp)) {
             $code    = $this->connection->getResultCode();
             $message = $this->connection->getResultMessage();
 
             $this->failure("Failed to store cache entry into Memcached server: #{$code} - {$message}");
         }
+    }
+
+    private function getExpirationTimestamp(CacheEntry $entry): int
+    {
+        if ($entry->hasExpirationTimestamp()) {
+            return $entry->getExpirationTimestamp();
+        }
+
+        return 0; // Never expires.
     }
 
     public function tryFetch(string $id): ?CacheEntry

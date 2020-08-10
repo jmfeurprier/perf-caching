@@ -2,10 +2,9 @@
 
 namespace perf\Caching;
 
-use InvalidArgumentException;
+use perf\Caching\Exception\CachingException;
 use perf\Caching\Storage\CachingStorageInterface;
-use RuntimeException;
-use perf\Timing\Clock;
+use perf\Timing\ClockInterface;
 
 /**
  * Allows to store any kind of content (text, html, object, etc) into cache.
@@ -14,7 +13,7 @@ class CacheClient
 {
     private CachingStorageInterface $storage;
 
-    private Clock $clock;
+    private ClockInterface $clock;
 
     public static function createWithStorage(CachingStorageInterface $storage): self
     {
@@ -29,7 +28,7 @@ class CacheClient
         return new CacheClientBuilder();
     }
 
-    public function __construct(CachingStorageInterface $storage, Clock $clock)
+    public function __construct(CachingStorageInterface $storage, ClockInterface $clock)
     {
         $this->storage = $storage;
         $this->clock   = $clock;
@@ -39,45 +38,51 @@ class CacheClient
      * Attempts to store provided content into cache. Cache file will hold creation and expiration timestamps,
      *   and provided content.
      *
-     * @param mixed $id      Cache item unique identifier (ex: 123).
-     * @param mixed $content Content to be added to cache.
-     * @param null|int       $maxLifetimeSeconds (Optional) duration in seconds after which cache file will be
-     *      considered expired.
+     * @param mixed    $id                 Cache item unique identifier (ex: 123).
+     * @param mixed    $content            Content to be added to cache.
+     * @param null|int $maxLifetimeSeconds (Optional) duration in seconds after which cache file will be considered
+     *                                     expired.
      *
      * @return void
      *
-     * @throws InvalidArgumentException
-     * @throws RuntimeException
+     * @throws CachingException
      */
     public function store(string $id, $content, ?int $maxLifetimeSeconds = null): void
     {
-        $creationTimestamp = $this->clock->getTimestamp();
-
-        if (null === $maxLifetimeSeconds) {
-            $expirationTimestamp = null;
-        } else {
-            if ($maxLifetimeSeconds < 1) {
-                throw new InvalidArgumentException('Invalid maximum lifetime.');
-            }
-
-            $expirationTimestamp = ($creationTimestamp + $maxLifetimeSeconds);
-        }
+        $creationTimestamp   = $this->clock->getTimestamp();
+        $expirationTimestamp = $this->getExpirationTimestamp($creationTimestamp, $maxLifetimeSeconds);
 
         $entry = new CacheEntry($id, $content, $creationTimestamp, $expirationTimestamp);
 
         $this->storage->store($entry);
     }
 
+    private function getExpirationTimestamp(int $creationTimestamp, ?int $maxLifetimeSeconds): ?int
+    {
+        if (null === $maxLifetimeSeconds) {
+            return null;
+        }
+
+        if ($maxLifetimeSeconds < 1) {
+            throw new CachingException('Invalid maximum lifetime.');
+        }
+
+        return ($creationTimestamp + $maxLifetimeSeconds);
+    }
+
     /**
      * Attempts to retrieve content from cache.
      *
-     * @param mixed $id Cache entry unique identifier (ex: "123").
+     * @param string   $id                 Cache entry unique identifier (ex: "123").
      * @param null|int $maxLifetimeSeconds Duration in seconds. If provided, will bypass expiration timestamp
-     *      in cache file, using creation timestamp + provided duration to check whether cached content has
-     *      expired or not.
+     *                                     in cache file, using creation timestamp + provided duration to check whether
+     *                                     cached content has expired or not.
+     *
      * @return null|mixed
+     *
+     * @throws CachingException
      */
-    public function tryFetch($id, $maxLifetimeSeconds = null)
+    public function tryFetch(string $id, ?int $maxLifetimeSeconds = null)
     {
         $entry = $this->storage->tryFetch($id);
 
@@ -94,7 +99,7 @@ class CacheClient
                 return null;
             }
         } elseif (null !== $maxLifetimeSeconds) {
-            throw new InvalidArgumentException('Invalid maximum lifetime.');
+            throw new CachingException('Invalid maximum lifetime.');
         }
 
         if ($entry->hasExpirationTimestamp()) {

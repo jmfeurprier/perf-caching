@@ -4,7 +4,6 @@ namespace perf\Caching\Storage;
 
 use perf\Caching\CacheEntry;
 use perf\Caching\Exception\CachingException;
-use RuntimeException;
 
 interface CachingStorageInterface
 {
@@ -12,20 +11,20 @@ interface CachingStorageInterface
      * Attempts to store provided content into cache.
      * Cache file will hold creation and expiration timestamps, and provided content.
      *
-     * @param CacheEntry $entry
+     * @param CacheEntry $cacheEntry
      *
      * @return void
      *
-     * @throws RuntimeException
+     * @throws CachingException
      */
-    public function store(CacheEntry $entry): void;
+    public function store(CacheEntry $cacheEntry): void;
 
     /**
      * @param string $id Cache item unique identifier (ex: 123).
      *
      * @return null|CacheEntry
      *
-     * @throws RuntimeException
+     * @throws CachingException
      */
     public function tryFetch(string $id): ?CacheEntry;
 

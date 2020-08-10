@@ -2,7 +2,7 @@
 
 namespace perf\Caching;
 
-use RuntimeException;
+use perf\Caching\Exception\CachingException;
 
 class CacheEntry
 {
@@ -54,12 +54,17 @@ class CacheEntry
         return (null !== $this->expirationTimestamp);
     }
 
+    /**
+     * @return int
+     *
+     * @throws CachingException
+     */
     public function getExpirationTimestamp(): int
     {
         if ($this->hasExpirationTimestamp()) {
             return $this->expirationTimestamp;
         }
 
-        throw new RuntimeException('No expiration timestamp set.');
+        throw new CachingException('No expiration timestamp set.');
     }
 }
