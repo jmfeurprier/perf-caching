@@ -93,14 +93,12 @@ class CacheClient
 
         $nowTimestamp = $this->clock->getTimestamp();
 
-        if (is_int($maxLifetimeSeconds)) {
+        if (null !== $maxLifetimeSeconds) {
             $entryAgeSeconds = ($nowTimestamp - $entry->getCreationTimestamp());
 
             if ($entryAgeSeconds > $maxLifetimeSeconds) {
                 return null;
             }
-        } elseif (null !== $maxLifetimeSeconds) {
-            throw new CachingException('Invalid maximum lifetime.');
         }
 
         if ($entry->hasExpirationTimestamp()) {
