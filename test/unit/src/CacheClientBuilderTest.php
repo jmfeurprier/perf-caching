@@ -15,14 +15,14 @@ class CacheClientBuilderTest extends TestCase
         $this->cacheClientBuilder = new CacheClientBuilder();
     }
 
-    public function testBuildBare()
+    public function testBuildBare(): void
     {
         $result = $this->cacheClientBuilder->build();
 
         $this->assertInstanceOf(CacheClient::class, $result);
     }
 
-    public function testBuildWithStorage()
+    public function testBuildWithStorage(): void
     {
         $storage = $this->createMock(CachingStorageInterface::class);
 
@@ -33,7 +33,7 @@ class CacheClientBuilderTest extends TestCase
         $this->assertInstanceOf(CacheClient::class, $result);
     }
 
-    public function testBuildWithClock()
+    public function testBuildWithClock(): void
     {
         $clock = $this->createMock(ClockInterface::class);
 

@@ -18,10 +18,7 @@ class CacheEntry
     private ?int $expirationTimestamp;
 
     /**
-     * @param string   $id
-     * @param mixed    $content
-     * @param int      $creationTimestamp
-     * @param null|int $expirationTimestamp
+     * @param mixed $content
      */
     public function __construct(string $id, $content, int $creationTimestamp, ?int $expirationTimestamp)
     {
@@ -55,8 +52,6 @@ class CacheEntry
     }
 
     /**
-     * @return int
-     *
      * @throws CachingException
      */
     public function getExpirationTimestamp(): int

@@ -43,8 +43,6 @@ class CacheClient
      * @param null|int $maxLifetimeSeconds (Optional) duration in seconds after which cache file will be considered
      *                                     expired.
      *
-     * @return void
-     *
      * @throws CachingException
      */
     public function store(string $id, $content, ?int $maxLifetimeSeconds = null): void
@@ -57,6 +55,9 @@ class CacheClient
         $this->storage->store($entry);
     }
 
+    /**
+     * @throws CachingException
+     */
     private function getExpirationTimestamp(int $creationTimestamp, ?int $maxLifetimeSeconds): ?int
     {
         if (null === $maxLifetimeSeconds) {
@@ -76,7 +77,7 @@ class CacheClient
      * @param string   $id                 Cache entry unique identifier (ex: "123").
      * @param null|int $maxLifetimeSeconds Duration in seconds. If provided, will bypass expiration timestamp
      *                                     in cache file, using creation timestamp + provided duration to check whether
-     *                                     cached content has expired or not.
+     *                                     cached content has expired.
      *
      * @return null|mixed
      *
@@ -111,11 +112,17 @@ class CacheClient
         return $entry->getContent();
     }
 
+    /**
+     * @throws CachingException
+     */
     public function flushById(string $id): void
     {
         $this->storage->flushById($id);
     }
 
+    /**
+     * @throws CachingException
+     */
     public function flushAll(): void
     {
         $this->storage->flushAll();

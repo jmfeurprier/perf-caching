@@ -20,6 +20,9 @@ class FileSystemCachingStorage implements CachingStorageInterface
         $this->basePath = rtrim((string) $basePath, '/\\') . '/';
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function store(CacheEntry $cacheEntry): void
     {
         $cacheFilePath = $this->getCacheFilePath($cacheEntry->getId());
@@ -39,6 +42,9 @@ class FileSystemCachingStorage implements CachingStorageInterface
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function tryFetch(string $id): ?CacheEntry
     {
         $cacheFilePath = $this->getCacheFilePath($id);
@@ -72,6 +78,9 @@ class FileSystemCachingStorage implements CachingStorageInterface
         return new CacheEntry($id, $content, $creationTimestamp, $expirationTimestamp);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function flushById(string $id): void
     {
         $cacheFilePath = $this->getCacheFilePath($id);
@@ -81,6 +90,9 @@ class FileSystemCachingStorage implements CachingStorageInterface
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function flushAll(): void
     {
         $mask = '*' . self::CACHE_FILE_SUFFIX;

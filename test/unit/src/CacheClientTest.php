@@ -30,7 +30,7 @@ class CacheClientTest extends TestCase
         $this->cacheClient = new CacheClient($this->storage, $this->clock);
     }
 
-    public function testStoreAndFetch()
+    public function testStoreAndFetch(): void
     {
         $id           = 'foo';
         $content      = 'bar';

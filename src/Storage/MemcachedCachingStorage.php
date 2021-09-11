@@ -8,10 +8,7 @@ use perf\Caching\Exception\CachingException;
 
 class MemcachedCachingStorage implements CachingStorageInterface
 {
-    /**
-     * @var Memcached
-     */
-    private $connection;
+    private Memcached $connection;
 
     public static function createFromCredentials(string $host, int $port, string $keyPrefix = null): self
     {
@@ -35,6 +32,9 @@ class MemcachedCachingStorage implements CachingStorageInterface
         $this->connection = $memcached;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function store(CacheEntry $cacheEntry): void
     {
         $expirationTimestamp = $this->getExpirationTimestamp($cacheEntry);
@@ -56,6 +56,9 @@ class MemcachedCachingStorage implements CachingStorageInterface
         return 0; // Never expires.
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function tryFetch(string $id): ?CacheEntry
     {
         $result = $this->connection->get($id);
@@ -67,6 +70,9 @@ class MemcachedCachingStorage implements CachingStorageInterface
         return $result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function flushById(string $id): void
     {
         $expectedResultCodes = [
@@ -81,6 +87,9 @@ class MemcachedCachingStorage implements CachingStorageInterface
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function flushAll(): void
     {
         if (!$this->connection->flush()) {
@@ -89,10 +98,6 @@ class MemcachedCachingStorage implements CachingStorageInterface
     }
 
     /**
-     * @param string $message
-     *
-     * @return void
-     *
      * @throws CachingException
      */
     private function failure(string $message): void
