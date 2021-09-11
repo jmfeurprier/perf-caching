@@ -24,9 +24,6 @@
 		<phplint haltonfailure="true">
 			<fileset dir="${rootdir}">
 				<include name="src/" />
-				<exclude name="src/*/Resource/" />
-				<include name="application/function/" />
-				<include name="application/script/" />
 				<include name="test/unit/" />
 			</fileset>
 		</phplint>
