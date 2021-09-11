@@ -1,7 +1,7 @@
 perf caching
 ============
 
-caching package from perf, the PHP Extensible and Robust Framework.
+Allows caching of data (with Memcached, file-system, etc).
 
 ## Usage
 
@@ -17,7 +17,7 @@ use perf\Caching\Storage\NullCachingStorage;
 use perf\Caching\Storage\VolatileCachingStorage;
 
 // Memcached
-$storage = MemcachedCachingStorage::createFromCredentials('https://1.2.3.4', 123);
+$storage = MemcachedCachingStorage::createFromCredentials('1.2.3.4', 123);
 $cache   = CacheClient::createWithStorage($storage);
 
 // Volatile storage
@@ -31,7 +31,6 @@ $cache   = CacheClient::createWithStorage($storage);
 // Null storage (caches nothing)
 $storage = new NullCachingStorage();
 $cache   = CacheClient::createWithStorage($storage);
-
 ```
 
 ### Storing and retrieving data
@@ -47,5 +46,4 @@ $cache->store('foo', $objectToStore);
 // ...
 
 $object = $cache->tryFetch('foo');
-
 ```
